@@ -94,3 +94,59 @@ renderCompletedTasks();
 
 // Add task event listener
 taskForm.addEventListener("submit", addTask);
+
+// Filter tasks
+function filterTasks(status) {
+    if (status === "completed") {
+        return tasks.filter((task) => task.completed);
+    } else if (status === "uncompleted") {
+        return tasks.filter((task) => !task.completed);
+    } else {
+        return tasks;
+    }
+}
+
+const filterButtons = document.querySelectorAll(".filter-button");
+
+filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        const status = button.dataset.status;
+        const filteredTasks = filterTasks(status);
+        renderTasks(filteredTasks);
+    });
+});
+
+// Sort tasks by name
+const sortByNameButton = document.getElementById("sortByName");
+
+sortByNameButton.addEventListener("click", () => {
+    tasks.sort((a, b) => {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+        return 0;
+    });
+    renderTasks(tasks);
+});
+
+// Edit task
+function editTask(index) {
+    const newName = prompt("Измените название задачи:", tasks[index].name);
+    if (newName !== null) {
+        tasks[index].name = newName;
+        updateLocalStorage();
+        renderTasks(tasks);
+    }
+}
+
+taskList.addEventListener("click", (event) => {
+    if (event.target.classList.contains("edit")) {
+        const index = event.target.dataset.index;
+        editTask(index);
+    }
+});
